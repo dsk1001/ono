@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>오버나이트 오트밀 계산기</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
+        }
+        input, select, button {
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box; /* 패딩 포함한 크기 계산 */
+        }
+        label {
+            display: block; /* 라벨을 줄바꿈 */
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: #f9f9f9;
+        }
+        .feedback {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #4caf50;
+            border-radius: 5px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            font-weight: bold;
+        }
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            input, select, button {
+                font-size: 14px;
+                padding: 8px;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>오버나이트 오트밀 계산기</h1>
+
+    <label for="ingredient">재료 선택:</label>
+    <select id="ingredient">
+        <option value="">-- 재료를 선택하세요 --</option>
+        <option value="퀘이커 오트밀 오리지널 시리얼">퀘이커 오트밀 오리지널 시리얼</option>
+        <option value="바이오 저지방 요거트">바이오 저지방 요거트</option>
+        <option value="매일우유 저지방 우유">매일우유 저지방 우유</option>
+        <option value="냉동 파이브베리">냉동 파이브베리</option>
+        <option value="복음자리 45도 딸기잼">복음자리 45도 딸기잼</option>
+        <option value="메이플 시럽">메이플 시럽</option>
+        <option value="사과">사과</option>
+    </select>
+
+    <label for="amount">용량 (g 또는 ml):</label>
+    <input type="number" id="amount" placeholder="예: 50">
+
+    <button onclick="addIngredient()">재료 추가</button>
+    <button onclick="removeLastIngredient()">재료 빼기</button>
+    <button onclick="resetAll()">초기화</button>
+
+    <div id="ingredients-list"></div>
+
+    <div class="result" id="result">
+        <h3>총 영양성분:</h3>
+        <p>칼로리: 0 kcal</p>
+        <p>탄수화물: 0 g</p>
+        <p>단백질: 0 g</p>
+        <p>지방: 0 g</p>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+
+    <script>
+        // JSON 데이터베이스
+        const ingredientData = {
+            "퀘이커 오트밀 오리지널 시리얼": { "칼로리": 367, "탄수화물": 66.2, "단백질": 11.9, "지방": 7 },
+            "바이오 저지방 요거트": { "칼로리": 55, "탄수화물": 7.2, "단백질": 4.5, "지방": 1 },
+            "매일우유 저지방 우유": { "칼로리": 45, "탄수화물": 4.8, "단백질": 3.3, "지방": 1.6 },
+            "냉동 파이브베리": { "칼로리": 50, "탄수화물": 12, "단백질": 1, "지방": 0.2 },
+            "복음자리 45도 딸기잼": { "칼로리": 187, "탄수화물": 46, "단백질": 0.3, "지방": 0 },
+            "메이플 시럽": { "칼로리": 260, "탄수화물": 67, "단백질": 0, "지방": 0 },
+            "사과": { "칼로리": 52, "탄수화물": 14, "단백질": 0.3, "지방": 0.2 }
+        };
+
+        const total = { 칼로리: 0, 탄수화물: 0, 단백질: 0, 지방: 0 };
+        const ingredientsList = [];
+
+        const calorieLimit = 400; // 한 끼 식사의 적정 칼로리 기준
+        const carbLimit = 35; // 탄수화물(g) 적정 기준
+        const proteinLimit = 20; // 단백질(g) 적정 기준
+
+        function addIngredient() {
+            const ingredient = document.getElementById("ingredient").value;
+            const amount = parseFloat(document.getElementById("amount").value);
+
+            if (!ingredient) {
+                alert("재료를 선택하세요!");
+                return;
+            }
+
+            if (!amount || amount <= 0) {
+                alert("유효한 용량을 입력하세요!");
+                return;
+            }
+
+            const data = ingredientData[ingredient];
+            const 칼로리 = (data.칼로리 * amount) / 100;
+            const 탄수화물 = (data.탄수화물 * amount) / 100;
+            const 단백질 = (data.단백질 * amount) / 100;
+            const 지방 = (data.지방 * amount) / 100;
+
+            total.칼로리 += 칼로리;
+            total.탄수화물 += 탄수화물;
+            total.단백질 += 단백질;
+            total.지방 += 지방;
+
+            ingredientsList.push({ ingredient, amount, 칼로리, 탄수화물, 단백질, 지방 });
+
+            updateIngredientList();
+            updateTotal();
+            updateFeedback();
+        }
+
+        function removeLastIngredient() {
+            if (ingredientsList.length === 0) {
+                alert("제거할 재료가 없습니다!");
+                return;
+            }
+
+            const lastIngredient = ingredientsList.pop();
+            total.칼로리 -= lastIngredient.칼로리;
+            total.탄수화물 -= lastIngredient.탄수화물;
+            total.단백질 -= lastIngredient.단백질;
+            total.지방 -= lastIngredient.지방;
+
+            updateIngredientList();
+            updateTotal();
+            updateFeedback();
+        }
+
+        function resetAll() {
+            total.칼로리 = 0;
+            total.탄수화물 = 0;
+            total.단백질 = 0;
+            total.지방 = 0;
+            ingredientsList.length = 0;
+
+            updateIngredientList();
+            updateTotal();
+            updateFeedback();
+        }
+
+        function updateIngredientList() {
+            const ingredientsDiv = document.getElementById("ingredients-list");
+            ingredientsDiv.innerHTML = ingredientsList.map(item => `
+                <p>${item.ingredient} (${item.amount}g/ml) - 
+                칼로리: ${item.칼로리.toFixed(1)} kcal, 
+                탄수화물: ${item.탄수화물.toFixed(1)} g, 
+                단백질: ${item.단백질.toFixed(1)} g, 
+                지방: ${item.지방.toFixed(1)} g</p>
+            `).join('');
+        }
+
+        function updateTotal() {
+            document.getElementById("result").innerHTML = `
+                <h3>총 영양성분:</h3>
+                <p>칼로리: ${total.칼로리.toFixed(1)} kcal</p>
+                <p>탄수화물: ${total.탄수화물.toFixed(1)} g</p>
+                <p>단백질: ${total.단백질.toFixed(1)} g</p>
+                <p>지방: ${total.지방.toFixed(1)} g</p>
+            `;
+        }
+
+        function updateFeedback() {
+            const feedbackDiv = document.getElementById("feedback");
+
+            let feedbackMessage = "";
+
+            if (total.칼로리 > calorieLimit) {
+                feedbackMessage += `칼로리가 <span style="color: red;">과합니다</span>. 조정이 필요합니다.<br>`;
+            } else {
+                feedbackMessage += `칼로리가 적절합니다.<br>`;
+            }
+
+            if (total.탄수화물 > carbLimit) {
+                feedbackMessage += `탄수화물이 <span style="color: red;">과합니다</span>. 줄이는 것을 고려하세요.<br>`;
+            } else {
+                feedbackMessage += `탄수화물이 적절합니다.<br>`;
+            }
+
+            if (total.단백질 > proteinLimit) {
+                feedbackMessage += `단백질이 <span style="color: red;">과합니다</span>. 줄이는 것을 고려하세요.<br>`;
+            } else if (total.단백질 < proteinLimit / 2) {
+                feedbackMessage += `단백질이 <span style="color: orange;">부족합니다</span>. 추가 섭취를 고려하세요.<br>`;
+            } else {
+                feedbackMessage += `단백질이 적절합니다.<br>`;
+            }
+
+            feedbackDiv.innerHTML = feedbackMessage;
+        }
+    </script>
+</body>
+</html>
