@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>오늘의 총평</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 700px;
+            margin: auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        h2 {
+            text-align: center;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .input-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            font-weight: bold;
+            min-width: 160px;
+        }
+        input, textarea {
+            flex-grow: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            justify-content: space-between;
+            flex-grow: 1;
+        }
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 14px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .convert-btn {
+            background-color: #007bff;
+            color: white;
+        }
+        .copy-btn {
+            background-color: #28a745;
+            color: white;
+        }
+        .output {
+            margin-top: 15px;
+            padding: 10px;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>오늘의 총평</h2>
+    
+    <div class="container">
+        <div class="input-group">
+            <label>섭취 칼로리 (kcal)</label>
+            <input type="number" id="calories" placeholder="예: 1200">
+        </div>
+
+        <div class="input-group">
+            <label>탄수화물 (g)</label>
+            <input type="number" id="carbs" placeholder="예: 100">
+        </div>
+
+        <div class="input-group">
+            <label>단백질 (g)</label>
+            <input type="number" id="protein" placeholder="예: 110">
+        </div>
+
+        <div class="input-group">
+            <label>지방 (g)</label>
+            <input type="number" id="fat" placeholder="예: 50">
+        </div>
+
+        <div class="input-group">
+            <label>소모 칼로리 (kcal)</label>
+            <input type="number" id="burned_calories" placeholder="예: 500">
+        </div>
+
+        <div class="input-group">
+            <label>운동 종류</label>
+            <input type="text" id="exercise_type" placeholder="예: 피트니스 복싱 30분, 걷기 10,000보">
+        </div>
+
+        <div class="input-group">
+            <label>기상 후 컨디션</label>
+            <div class="radio-group">
+                <label><input type="radio" name="morning_condition" value="좋음">좋음</label>
+                <label><input type="radio" name="morning_condition" value="보통">보통</label>
+                <label><input type="radio" name="morning_condition" value="피곤함">피곤함</label>
+                <label><input type="radio" name="morning_condition" value="너무 피곤함">너무 피곤함</label>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>운동 강도</label>
+            <div class="radio-group">
+                <label><input type="radio" name="intensity" value="가벼움">가벼움</label>
+                <label><input type="radio" name="intensity" value="보통">보통</label>
+                <label><input type="radio" name="intensity" value="강함">강함</label>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>운동 후 느낌</label>
+            <div class="radio-group">
+                <label><input type="radio" name="postExerciseFeeling" value="힘 남음">힘 남음</label>
+                <label><input type="radio" name="postExerciseFeeling" value="적당">적당</label>
+                <label><input type="radio" name="postExerciseFeeling" value="힘듦">힘듦</label>
+                <label><input type="radio" name="postExerciseFeeling" value="너무 피곤함">너무 피곤함</label>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>특이사항</label>
+            <textarea id="special_notes"></textarea>
+        </div>
+
+        <div class="input-group">
+            <label>오늘의 한줄 느낌</label>
+            <textarea id="daily_note"></textarea>
+        </div>
+
+        <button class="convert-btn" onclick="convertToText()">텍스트로 변환</button>
+
+        <div id="output" class="output"></div>
+
+        <button class="copy-btn" onclick="copyToClipboard()">복사하기</button>
+    </div>
+
+    <script>
+        function convertToText() {
+            let textOutput = `📌 오늘의 총평\n\n`
+                + `✔ 섭취 칼로리: ${getValue("calories")} kcal (탄 ${getValue("carbs")}g / 단 ${getValue("protein")}g / 지 ${getValue("fat")}g)\n`
+                + `✔ 소모 칼로리: ${getValue("burned_calories")} kcal\n`
+                + `✔ 운동 종류: ${getValue("exercise_type")}\n`
+                + `✔ 기상 후 컨디션: ${getRadioValue("morning_condition")}\n`
+                + `✔ 운동 강도: ${getRadioValue("intensity")}\n`
+                + `✔ 운동 후 느낌: ${getRadioValue("postExerciseFeeling")}\n`
+                + getTextValue("special_notes", "✔ 특이사항: ")
+                + getTextValue("daily_note", "✔ 오늘의 한줄 느낌: ");
+
+            document.getElementById("output").innerText = textOutput;
+        }
+
+        function copyToClipboard() {
+            navigator.clipboard.writeText(document.getElementById("output").innerText);
+            alert("총평이 복사되었습니다!");
+        }
+
+        function getValue(id) {
+            return document.getElementById(id).value || "미입력";
+        }
+
+        function getRadioValue(name) {
+            return document.querySelector(`input[name="${name}"]:checked`)?.value || "미입력";
+        }
+
+        function getTextValue(id, label) {
+            let value = document.getElementById(id).value;
+            return value ? `${label}${value}\n` : "";
+        }
+    </script>
+
+</body>
+</html>
