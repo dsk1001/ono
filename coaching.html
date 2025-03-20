@@ -2,8 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1"/>
     <title>오늘의 총평</title>
     <style>
         body {
@@ -178,21 +177,37 @@
         function convertToText() {
             let textOutput = `📌 오늘의 총평\n\n`
                 + `✔ 섭취 칼로리: ${getValue("calories")} kcal (탄 ${getValue("carbs")}g / 단 ${getValue("protein")}g / 지 ${getValue("fat")}g)\n`
-                + `✔ 소모 칼로리: ${getValue("burned_calories")} kcal (운동 ${getValue("exercise_calories")} kcal + 활동 ${getValue("activity_calories")} kcal)\n`
+                + `✔ 소모 칼로리: ${getValue("burned_calories")} kcal\n`
                 + `✔ 운동 종류: ${getValue("exercise_type")}\n`
+                + `✔ 기상 후 컨디션: ${getRadioValue("morning_condition")}\n`
+                + `✔ 운동 강도: ${getRadioValue("intensity")}\n`
+                + `✔ 운동 후 느낌: ${getRadioValue("postExerciseFeeling")}\n`
                 + getTextValue("special_notes", "✔ 특이사항: ")
                 + getTextValue("daily_note", "✔ 오늘의 한줄 느낌: ");
 
             document.getElementById("output").innerText = textOutput;
-        }
+        }  
 
+        function getTextValue(id, label) {
+            let value = document.getElementById(id).value.trim();
+            return value ? `${label}${value}\n` : "";
+}
         function copyToClipboard() {
-            navigator.clipboard.writeText(document.getElementById("output").innerText);
+            let outputText = document.getElementById("output").innerText;
+            if (outputText.trim() === "") {
+                alert("변환된 텍스트가 없습니다!");
+                return;
+            }
+            navigator.clipboard.writeText(outputText);
             alert("총평이 복사되었습니다!");
         }
 
         function getValue(id) {
             return document.getElementById(id).value || "미입력";
+        }
+
+        function getRadioValue(name) {
+            return document.querySelector(`input[name="${name}"]:checked`)?.value || "미입력";
         }
     </script>
 
