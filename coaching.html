@@ -134,15 +134,17 @@
         <div class="input-group">
             <label>운동 강도</label>
             <div class="radio-group">
+                <label><input type="radio" name="intensity" value="운동하지 않음">운동하지 않음</label> <!-- 추가됨 -->
                 <label><input type="radio" name="intensity" value="가벼움">가벼움</label>
                 <label><input type="radio" name="intensity" value="보통">보통</label>
                 <label><input type="radio" name="intensity" value="강함">강함</label>
             </div>
         </div>
-
+        
         <div class="input-group">
             <label>운동 후 느낌</label>
             <div class="radio-group">
+                <label><input type="radio" name="postExerciseFeeling" value="운동하지 않음">운동하지 않음</label> <!-- 추가됨 -->
                 <label><input type="radio" name="postExerciseFeeling" value="힘 남음">힘 남음</label>
                 <label><input type="radio" name="postExerciseFeeling" value="적당">적당</label>
                 <label><input type="radio" name="postExerciseFeeling" value="힘듦">힘듦</label>
@@ -177,6 +179,8 @@
         function convertToText() {
             let textOutput = `📌 오늘의 총평\n\n`
                 + `✔ 섭취 칼로리: ${getValue("calories")} kcal (탄 ${getValue("carbs")}g / 단 ${getValue("protein")}g / 지 ${getValue("fat")}g)\n`
+                + `✔ 운동 칼로리: ${getValue("exercise_calories")} kcal\n` // 추가됨
+                + `✔ 활동 칼로리: ${getValue("activity_calories")} kcal\n` // 추가됨
                 + `✔ 소모 칼로리: ${getValue("burned_calories")} kcal\n`
                 + `✔ 운동 종류: ${getValue("exercise_type")}\n`
                 + `✔ 기상 후 컨디션: ${getRadioValue("morning_condition")}\n`
