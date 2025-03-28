@@ -153,6 +153,16 @@
         </div>
 
         <div class="input-group">
+            <label>수분 섭취량</label>
+            <div class="radio-group">
+                <label><input type="radio" name="water_intake" value="1L 미만">1L 미만</label>
+                <label><input type="radio" name="water_intake" value="1L~1.5L">1L~1.5L</label>
+                <label><input type="radio" name="water_intake" value="1.5L~2.0L">1.5L~2.0L</label>
+                <label><input type="radio" name="water_intake" value="2.0L 이상">2.0L 이상</label>
+            </div>
+        </div>
+
+        <div class="input-group">
             <label>특이사항</label>
             <textarea id="special_notes"></textarea>
         </div>
@@ -179,6 +189,7 @@
         function convertToText() {
             let textOutput = `📌 오늘의 총평\n\n`
                 + `✔ 섭취 칼로리: ${getValue("calories")} kcal (탄 ${getValue("carbs")}g / 단 ${getValue("protein")}g / 지 ${getValue("fat")}g)\n`
+                + `✔ 수분 섭취량: ${getRadioValue("water_intake")}\n` // 수분 섭취량 추가
                 + `✔ 운동 칼로리: ${getValue("exercise_calories")} kcal\n` // 추가됨
                 + `✔ 활동 칼로리: ${getValue("activity_calories")} kcal\n` // 추가됨
                 + `✔ 소모 칼로리: ${getValue("burned_calories")} kcal\n`
